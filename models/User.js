@@ -10,6 +10,10 @@ const UserSchema = new mongoose.Schema({
         required:true,
         unique:true,
     },
+    confirmed:{
+    	type:Boolean,
+    	default:false
+    },
     password:{
         type:String,
         required:true,
