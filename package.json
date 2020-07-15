@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start":"node server",
-    "server":"nodemon server"
+    "start": "node server",
+    "server": "nodemon server"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "express-validator": "^6.6.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.24",
+    "nodemailer": "^6.4.10",
     "request": "^2.88.2"
   },
   "devDependencies": {

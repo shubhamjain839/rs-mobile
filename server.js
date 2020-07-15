@@ -6,8 +6,13 @@ const app = express()
 const PORT = process.env.PORT || 5000
 //Connecting database
 ConnectDB()
-//Routes 
 
+//middleware 
+app.use(express.json({ extended: false }));
+
+//Routes 
+app.use('/api/users',require('./routes/api/users'))
+app.use('/api/auth',require('./routes/api/auth'))
 app.get('/',(req,res)=>{
     res.send("Hello")
 })
