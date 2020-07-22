@@ -151,4 +151,41 @@ router.post('/modify',
 )
 
 
+//Api /api/users/change-pwd
+//POST 
+//Change user password
+
+router.post('/change-pwd',
+    [
+        auth,
+        [
+            check('password','Password not valid !').notEmpty().isLength({
+                min:"6",
+            }),
+            check('confirmPass').notEmpty().isLength({
+                min:"6",
+            }),
+        ]
+    ],
+    async (req,res) => {
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) return res.status(400).json({errors:errors.array()})
+        const {password,confirmPass,oldPass} = req.body
+        try {
+            let user = await User.findById(req.user.id)
+            if(!user) return res.status(400).json({errors : [{msg:'Authentication failed !'}]})
+            if(!await bcrypt.compare(oldPass,user.password)) return res.status(401).json({errors :[{msg:'Invalid old password !'}]})
+            if(password !== confirmPass) return res.status(400).send({errors :[{msg: 'Passwords do not match !'}]})
+            const salt = await bcrypt.genSalt(10)
+            const pass = await bcrypt.hash(password,salt)
+            const result = await User.updateOne({_id:user.id},{$set:{password:pass}})   
+            if(result) return res.status(200).json({msg:'Password Updated Successfully !'})
+        } catch (err) {
+            console.log(err.message)
+            res.status(500).send('Server Error !')
+        }
+    }
+)
+
+
 module.exports = router;

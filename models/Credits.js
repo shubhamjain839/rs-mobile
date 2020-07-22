@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const CreditSchema = new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'user',
+        ref:'users',
     },
     name:{
         type:String,
@@ -15,4 +15,4 @@ const CreditSchema = new mongoose.Schema({
     },
 })
 
-module.exports = Credit = mongoose.model('credit',CreditSchema)
+module.exports = Credit = mongoose.model('credits',CreditSchema)

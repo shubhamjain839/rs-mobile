@@ -36,14 +36,15 @@ router.post('/',
             if(!errors.isEmpty()) return res.status(401).json({errors:errors.array()})
             const {email,password} = req.body
             const user = await User.findOne({email})
-            if(!user) return res.status(401).json({msg:'Invalid credentials!'})
-            const isMatch = bcrypt.compare(password,user.password)
-            if(!isMatch) return res.status(401).json({msg:'Invalid Credentials!'})
-            if(!user.confirmed) return res.status(400).json({msg:'Account is not verified !'})
+            if(!user) return res.status(401).json({errors:[{msg:'Invalid credentials!'}]})
+            const isMatch = await bcrypt.compare(password,user.password)
+            if(!isMatch) return res.status(401).json({errors:[{msg:'Invalid Credentials!'}]})
+            if(!user.confirmed) return res.status(400).json({errors:[{msg:'Account is not verified !'}]})
             const payload = {
                 user:{
                     id:user.id,
                 },
+                isAdmin:user.isAdmin,
             }
             jwt.sign(
                 payload,
