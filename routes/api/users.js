@@ -6,6 +6,9 @@ const User = require('../../models/User')
 const bcrypt = require('bcryptjs')
 const {check,validationResult} = require('express-validator')
 const nodeMailer = require('nodemailer')
+const auth = require('../middleware/auth')
+const Credits = require('../../models/Credits')
+
 
 
 const transporter = nodeMailer.createTransport({
@@ -53,7 +56,13 @@ router.post('/',
             const salt = await bcrypt.genSalt(10)
             user.password = await bcrypt.hash(password,salt)
             await user.save()
-            
+            let credits = new Credits({
+                user,
+                name,
+            })
+            credits.user = user.id
+            credits.name = user.name
+            await credits.save()
             const payload = {
                 user:{
                     id:user.id
@@ -106,4 +115,40 @@ router.get('/confirmation/:token',async (req,res) => {
         res.status(500).send('Server Error !')
     } 
 })
+
+//Api /api/users/modify
+//POST 
+//Modify user
+
+router.post('/modify',
+    [
+        auth,
+        [
+            check('name','Name Required !').notEmpty(),
+            check('address','Address is Required !').notEmpty(),
+            check('city','City Required !').notEmpty(),
+            check('zipcode','ZipCode must be Valid !').isLength({min:6 ,max:6}),
+            check('state','State is Required !').notEmpty(),
+            check('country','Country is Required !').notEmpty(),
+            check('contact','Contact is Required !').isNumeric().isLength({min:10,max:10}),
+            check('shopname','Shop Name is Required !').notEmpty(),
+        ]
+    ],
+    async (req,res) => {
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) return res.status(400).json({errors:errors.array()})
+        const {name,contact,address,city,zipcode,state,country,shopname} = req.body
+        try {
+            let user = await User.findOne({contact})
+            if(user && user.id !== req.user.id) return res.status(400).json({errors : [{msg:'This is number is already linked to different account !'}]})
+            const result = await User.updateOne({_id:user.id},{$set:{name,contact,address,city,zipcode,state,country,shopname}})   
+            if(result) return res.status(200).json({msg:'Profile Updated Successfully !'})
+        } catch (err) {
+            console.log(err.message)
+            res.status(500).send('Server Error !')
+        }
+    }
+)
+
+
 module.exports = router;

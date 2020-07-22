@@ -13,6 +13,7 @@ app.use(express.json({ extended: false }));
 //Routes 
 app.use('/api/users',require('./routes/api/users'))
 app.use('/api/auth',require('./routes/api/auth'))
+app.use('/api/admin',require('./routes/api/admin'))
 app.get('/',(req,res)=>{
     res.send("Hello")
 })
