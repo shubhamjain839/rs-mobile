@@ -1,16 +1,8 @@
 const express = require('express')
-const config = require('config')
-const jwt = require('jsonwebtoken')
 const router = express.Router()
-const User = require('../../models/User')
-const Credits = require('../../models/Credits')
 const Services = require('../../models/Services')
-const bcrypt = require('bcryptjs')
 const {check,validationResult} = require('express-validator')
-const nodeMailer = require('nodemailer')
-const auth = require('../middleware/auth')
 const authAdmin = require('../middleware/authAdmin')
-const Categories = require('../../models/Categories')
 
 
 //Api /api/services/
@@ -36,10 +28,12 @@ router.post(
     '/add',
     [
         authAdmin,
-        check('name','Name is required !').notEmpty(),        
-        check('category','Categoty is Required').notEmpty(),
-        check('credits','Credits is required !').notEmpty(),
-        check('time','Time is required !').notEmpty(),
+        [
+            check('name','Name is required !').notEmpty(),        
+            check('category','Categoty is Required').notEmpty(),
+            check('credits','Credits is required !').notEmpty(),
+            check('time','Time is required !').notEmpty(),
+        ],
     ],
     async (req,res)=>{
         const errors = validationResult(req)
@@ -69,10 +63,13 @@ router.post(
 router.post(
     '/modify/:id',
     [
-        authAdmin,        
-        check('category','Categoty is Required').notEmpty(),
-        check('credits','Credits is required !').notEmpty(),
-        check('time','Time is required !').notEmpty(),
+        authAdmin,  
+        [
+                
+            check('category','Categoty is Required').notEmpty(),
+            check('credits','Credits is required !').notEmpty(),
+            check('time','Time is required !').notEmpty(),
+        ],
     ],
     async (req,res)=>{
         const errors = validationResult(req)

@@ -1,13 +1,8 @@
 const express = require('express')
-const config = require('config')
-const jwt = require('jsonwebtoken')
 const router = express.Router()
 const User = require('../../models/User')
 const Credits = require('../../models/Credits')
-const bcrypt = require('bcryptjs')
 const {check,validationResult} = require('express-validator')
-const nodeMailer = require('nodemailer')
-const auth = require('../middleware/auth')
 const authAdmin = require('../middleware/authAdmin')
 
 //Api /api/admin/get-all
