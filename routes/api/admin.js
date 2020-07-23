@@ -35,7 +35,7 @@ router.post('/add-credits/:id',
 [   
     authAdmin,
     [
-        check('credit','Invalid Credits').isNumeric().isInt({gt:0}),
+        check('credits','Invalid Credits').isNumeric().isInt({gt:0}),
     ],
 ],
 async (req,res)=>{
@@ -45,9 +45,9 @@ async (req,res)=>{
         // let admin = await User.findById(req.user.id)    
         // if(!admin.isAdmin) return res.status(400).json({errors :[{msg:'Authentication falied !'}]})
         let user = await User.findById(req.params.id)    
-        const {credit} = req.body 
+        const {credits} = req.body 
         if(!user) return res.status(400).json({errors:[{msg:'User not Found !'}]})
-        await Credits.findOneAndUpdate({user:user.id},{$inc : {credits:credit}})
+        await Credits.findOneAndUpdate({user:user.id},{$inc : {credits}})
         res.status(200).json({msg:'Credits updated Successfully !'})
     }
     catch(err){

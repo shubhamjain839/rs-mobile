@@ -46,6 +46,7 @@ router.post(
         if(!errors.isEmpty()) return res.status(500).json({errors:errors.array()})
         try {
             const {name,category,price,time} = req.body
+            if(await Services.findOne({name})) return res.json({errors:[{msg:'Service already exists !'}]})
             const service = new Services({
                 name,
                 price,
@@ -53,7 +54,34 @@ router.post(
                 category,
             })
             const result = await service.save()
-            if(result) return res.json({msg:'Services Added Successfully'})
+            if(result) return res.status(200).json({msg:'Services Added Successfully'})
+        } catch (err) {
+            console.log(err.message)
+            res.status(500).send('Server Error !')
+        }
+    }
+)
+
+//Api /api/services/modify/:id
+//POST
+//Modify existing service
+
+router.post(
+    '/modify/:id',
+    [
+        authAdmin,        
+        check('category','Categoty is Required').notEmpty(),
+        check('price','Price is required !').notEmpty(),
+        check('time','Time is required !').notEmpty(),
+    ],
+    async (req,res)=>{
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) return res.status(500).json({errors:errors.array()})
+        try {
+            const {category,price,time,isEnable} = req.body
+            const result = await Services.findByIdAndUpdate(req.params.id,{$set:{category,price,time,isEnable}})
+            if(result) return res.json({msg:'Services Modified Successfully'})
+            else return res.status(500).json({errors:[{msg:'Service Not Found'}]})
         } catch (err) {
             console.log(err.message)
             res.status(500).send('Server Error !')

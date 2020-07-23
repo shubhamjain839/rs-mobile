@@ -5,19 +5,9 @@ const router = express.Router()
 const User = require('../../models/User')
 const bcrypt = require('bcryptjs')
 const {check,validationResult} = require('express-validator')
-const nodeMailer = require('nodemailer')
+const Transporter = require('../../util/Transporter')
 const auth = require('../middleware/auth')
 const Credits = require('../../models/Credits')
-
-
-
-const transporter = nodeMailer.createTransport({
-    service:'Gmail',
-    auth:{
-        user:config.get('GMAIL_EMAIL'),
-        pass:config.get('GMAIL_PASS'),
-    },
-})
 
 
 //Api /api/users/
@@ -74,7 +64,7 @@ router.post('/',
                 (err,token)=>{
                     if(err) throw err
                     const url = `http://localhost:5000/api/users/confirmation/${token}`
-                    transporter.sendMail({
+                    Transporter.sendMail({
                         to:user.email,
                         subject:'RS Mobile Confirm Email',
                         html:`Please Click the below link to verify your account <a href="${url}">${url}</a>`

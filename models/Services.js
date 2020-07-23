@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const ServicesSchema = new mongoose.Schema({
     name:{
         type:String,
-        required:true,
+        unique:true
     },
     category:{
         type:String,
@@ -19,6 +19,10 @@ const ServicesSchema = new mongoose.Schema({
     },
     detail:{
         type:String,
+    },
+    isEnable:{
+        type:Boolean,
+        default:true,
     },
 })
 
