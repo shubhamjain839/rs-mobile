@@ -4,6 +4,7 @@ const CreditsOrderSchema = new mongoose.Schema({
     invoiceID:{
         type:Number,
         required:true,
+        unique:true,
     },
     user:{
         id:{

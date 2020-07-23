@@ -9,7 +9,7 @@ const ServicesSchema = new mongoose.Schema({
         ref:'categories',
         required:true,
     },
-    price:{
+    credits:{
         type:Number,
         required:true,
     },

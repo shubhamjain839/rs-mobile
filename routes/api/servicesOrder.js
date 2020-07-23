@@ -9,71 +9,71 @@ const nodeMailer = require('nodemailer')
 const auth = require('../middleware/auth')
 const authAdmin = require('../middleware/authAdmin')
 const Categories = require('../../models/Categories')
-const CreditsOrder = require('../../models/CreditsOrder')
 const InvoiceNumber = require('../../models/InvoiceNumber')
 const Transporter = require('../../util/Transporter')
+const ServicesOrder = require('../../models/ServicesOrder')
 
-//Api /api/creditsOrder
+//Api /api/servicesOrder
 //GET
-//Display all creditsOrder
+//Display all Services orders
 //Access Admin
 
 router.get('/',
     authAdmin,
     async (req,res)=>{
     try {
-        const creditsOrder = await CreditsOrder.find()
-        res.json(creditsOrder)
+        const servicesOrder = await ServicesOrder.find()
+        res.json(servicesOrder)
     } catch (err) {
         console.log(err.message)
         res.status(500).send('Server Error !')
     }
 })
 
-//Api /api/creditsOrder/user
+//Api /api/servicesOrder/user
 //GET
-//Display creditsOrder by user id
+//Display Services Order by user id
 //Access Private
 
 router.get('/user',
     auth,
     async (req,res)=>{
     try {
-        const creditsOrder = (await CreditsOrder.find()).filter(creditOrder => creditOrder.user.id == req.user.id)
-        res.json(creditsOrder)
+        const servicesOrder = (await ServicesOrder.find()).filter(serviceOrder => serviceOrder.user.id == req.user.id)
+        res.json(servicesOrder)
     } catch (err) {
         console.log(err.message)
         res.status(500).send('Server Error !')
     }
 })
 
-//Api /api/creditsOrder/
+//Api /api/servicesOrder/
 //POST
-//Place creditsOrder by user
+//Place servicesOrder by user
 //Access Private
 
 router.post('/',
     [
-        auth,
+        auth, 
         [
-            check('credits','Min 100 credits are requried').isNumeric().isInt({
-                min:100,
-            })
+            check('imei','This field is required !').notEmpty(),
         ]
     ],
     async (req,res)=>{
         const errors = validationResult(req)
         if(!errors.isEmpty()) return res.status(500).json({errors:errors.array()})
         try {
+            const {ServiceCredit,imei,notes,serviceName,category} = req.body
             const {name,email,contact,_id} = await User.findById(req.user.id)
-            const {credits,amount} = req.body
+            const {credits} = await Credits.findOne({user:_id})
+            if(ServiceCredit > credits) return res.status(200).json({errors:[{msg:'You dont have much credits !'}]}) 
             // const nnnn = new InvoiceNumber({})
             // await nnnn.save()
             let invoice = await InvoiceNumber.find()
             //console.log(invoice[0])
             invoice[0].invoiceID += 1
             await InvoiceNumber.findByIdAndUpdate(invoice[0]._id,{$set:{invoiceID:invoice[0].invoiceID}})
-            const creditOrder =  new CreditsOrder({
+            const serviceOrder =  new ServicesOrder({
                 invoiceID:invoice[0].invoiceID,
                 user:{
                     id:_id,
@@ -81,15 +81,19 @@ router.post('/',
                     email,
                     contact,
                 },
+                serviceName,
+                category,
+                imei,
                 credits,
-                amount,
+                notes,
             })
-            await creditOrder.save();
+            await serviceOrder.save();
+            await Credits.findOneAndUpdate({user:_id},{$inc:{credits:-ServiceCredit}})
             Transporter.sendMail({
                 to:email,
-                subject:'RS Mobile Order Placed',
+                subject:'RS Mobile Service Order Placed',
                 html:`Hello there, <br/> 
-                    This email is to inform you that your order of ${req.body.credits} Credits is placed Successfully.<br/>
+                    This email is to inform you that your order of imei/SN ${imei} Service is placed Successfully.<br/>
                     Thanks for Visiting US<br/>
                     <br/><br/>
                     Regards,<br/>
@@ -103,23 +107,24 @@ router.post('/',
     }
 )
 
-//Api /api/creditsOrder/resolve/:id
+//Api /api/servicesOrder/resolve/:id
 //POST
-//Resolve user Credits Order and add credits to the user
+//Resolve user Service Order
 //Access Admin
 
 router.post('/resolve/:id',
     authAdmin,
     async (req,res)=>{
         try {
-            const {email,credits,invoiceID} = req.body
-            await Credits.findOneAndUpdate({user:req.params.id},{$inc:{credits}})
-            await CreditsOrder.findOneAndUpdate({invoiceID},{$set:{isCompleted:true}})
+            const {email,invoiceID,imei} = req.body
+            //await Credits.findOneAndUpdate({user:req.params.id},{$inc:{credits}})
+            await ServicesOrder.findOneAndUpdate({invoiceID},{$set:{isCompleted:true}})
             Transporter.sendMail({
                 to:email,
-                subject:'RS Mobile Credits Credited to your Acoount',
+                subject:'RS Mobile is in process',
                 html:`Hello there, <br/> 
-                    This email is to inform you that your order of ${req.body.credits} Credits is completed and added to your account for invoice no ${invoiceID}.<br/>
+                    This email is to inform you that your service for IMEI/SN ${imei} is in process and will complete shortly. <br/>
+                    Invoice no: ${invoiceID}.<br/>
                     Thanks for Visiting us<br/>
                     <br/><br/> 
                     Regards,<br/>

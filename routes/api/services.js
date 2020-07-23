@@ -38,18 +38,18 @@ router.post(
         authAdmin,
         check('name','Name is required !').notEmpty(),        
         check('category','Categoty is Required').notEmpty(),
-        check('price','Price is required !').notEmpty(),
+        check('credits','Credits is required !').notEmpty(),
         check('time','Time is required !').notEmpty(),
     ],
     async (req,res)=>{
         const errors = validationResult(req)
         if(!errors.isEmpty()) return res.status(500).json({errors:errors.array()})
         try {
-            const {name,category,price,time} = req.body
+            const {name,category,credits,time} = req.body
             if(await Services.findOne({name})) return res.json({errors:[{msg:'Service already exists !'}]})
             const service = new Services({
                 name,
-                price,
+                credits,
                 time,   
                 category,
             })
@@ -71,15 +71,15 @@ router.post(
     [
         authAdmin,        
         check('category','Categoty is Required').notEmpty(),
-        check('price','Price is required !').notEmpty(),
+        check('credits','Credits is required !').notEmpty(),
         check('time','Time is required !').notEmpty(),
     ],
     async (req,res)=>{
         const errors = validationResult(req)
         if(!errors.isEmpty()) return res.status(500).json({errors:errors.array()})
         try {
-            const {category,price,time,isEnable} = req.body
-            const result = await Services.findByIdAndUpdate(req.params.id,{$set:{category,price,time,isEnable}})
+            const {category,credits,time,isEnable} = req.body
+            const result = await Services.findByIdAndUpdate(req.params.id,{$set:{category,credits,time,isEnable}})
             if(result) return res.json({msg:'Services Modified Successfully'})
             else return res.status(500).json({errors:[{msg:'Service Not Found'}]})
         } catch (err) {
