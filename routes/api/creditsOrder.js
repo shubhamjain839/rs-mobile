@@ -65,12 +65,11 @@ router.post('/',
             const {credits,amount} = req.body
             // const nnnn = new InvoiceNumber({})
             // await nnnn.save()
-            let invoice = await InvoiceNumber.find()
-            //console.log(invoice[0])
-            invoice[0].invoiceID += 1
-            await InvoiceNumber.findByIdAndUpdate(invoice[0]._id,{$set:{invoiceID:invoice[0].invoiceID}})
+            let invoice = (await InvoiceNumber.find())[0]
+            //console.log(invoice)
+            invoice.invoiceID += 1
             const creditOrder =  new CreditsOrder({
-                invoiceID:invoice[0].invoiceID,
+                invoiceID:invoice.invoiceID,
                 user:{
                     id:_id,
                     name,
@@ -81,6 +80,7 @@ router.post('/',
                 amount,
             })
             await creditOrder.save();
+            await InvoiceNumber.findByIdAndUpdate(invoice._id,{$set:{invoiceID:invoice.invoiceID}})
             Transporter.sendMail({
                 to:email,
                 subject:'RS Mobile Order Placed',

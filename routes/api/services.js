@@ -19,6 +19,20 @@ router.get('/',async (req,res)=>{
     }
 })
 
+//Api /api/services/:id
+//GET
+//Display service by id
+
+router.get('/:id',async (req,res)=>{
+    try {
+        const service = await Services.findById(req.params.id)
+        res.json(service)
+    } catch (err) {
+        console.log(err.message)
+        res.status(500).send('Server Error !')
+    }
+})
+
 
 //Api /api/services/add
 //POST
