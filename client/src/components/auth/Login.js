@@ -1,25 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { connect } from 'react-redux';
+import { loginUser } from '../../actions/auth'
+import PropTypes from 'prop-types'
+
 
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
+            <a color="inherit" href="https://material-ui.com/">
                 RS Mobile
-            </Link>{' '}
+            </a>{' '}
             {new Date().getFullYear()}
             {'.'}
         </Typography>
@@ -47,9 +51,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const Login = () => {
+const Login = ({ loginUser }) => {
+    
     const classes = useStyles();
 
+    const [LoginData, setLoginData] = useState({
+        email:'',
+        password:''
+    })
+    let e = true
+    const { email, password } = LoginData
+
+    const onChange = (e) => setLoginData({...LoginData,[e.target.name]:e.target.value})
+
+    const onSubmit = (e) => {
+        e.preventDefault()
+        loginUser(LoginData)
+    }
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -60,8 +78,10 @@ const Login = () => {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <form className={classes.form} noValidate>
+                <form className={classes.form} onSubmit={e=>onSubmit(e)} noValidate>
                     <TextField
+                        // error = {email === '' }
+                        // helperText = { email === '' ? 'Invalid Email' : ''}
                         variant="outlined"
                         margin="normal"
                         required
@@ -70,6 +90,8 @@ const Login = () => {
                         label="Email Address"
                         name="email"
                         autoComplete="email"
+                        onChange = {e=>onChange(e)}
+                        value = {email}
                         autoFocus
                     />
                     <TextField
@@ -82,6 +104,8 @@ const Login = () => {
                         type="password"
                         id="password"
                         autoComplete="current-password"
+                        onChange = {e=>onChange(e)}
+                        value = {password}
                     />
                     <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
@@ -98,12 +122,12 @@ const Login = () => {
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="#" variant="body2">
+                            <Link to='' variant="body2">
                                 Forgot password?
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link to="/register" variant="body2">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
@@ -116,5 +140,8 @@ const Login = () => {
         </Container>
     );
 }
+Login.propType = {
+    loginUser:PropTypes.func.isRequired,
+}
 
-export default Login
+export default connect(null,{loginUser})(Login)

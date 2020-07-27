@@ -1,23 +1,26 @@
-import React from 'react'
+import React,{ useState } from 'react'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
+import { Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { registerUser } from '../../actions/auth'
+import {connect} from 'react-redux'
+import PropTypes from 'prop-types'
 
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
+            <Link color="inherit" to='#' href="https://material-ui.com/">
                 Your Website
       </Link>{' '}
             {new Date().getFullYear()}
@@ -46,11 +49,52 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Register = () => {
-    const classes = useStyles();
+const Register = ({registerUser}) => {
+    const [RegisterData, setRegisterData] = useState({
+        name:'',
+        email:'',
+        password:'',
+        confirmPass:'',
+        contact:'',
+        zipcode:'',
+        address:'',
+        city:'',
+        state:'',
+        shopname:'',
+        country:'',
+    })
+    
+    const {name,email,password,confirmPass,country,address,city,state,shopname,contact,zipcode} = RegisterData
+    const onChange = (e) => setRegisterData({
+        ...RegisterData,[e.target.name]:e.target.value
+    })
+
+    const onSubmit = (e) => {
+        e.preventDefault()
+        if(RegisterData.password !== RegisterData.confirmPass) console.log('Password mis match')
+        else{
+            registerUser(RegisterData)
+           // console.log(RegisterData)
+            setRegisterData({
+                name:'',
+                email:'',
+                password:'',
+                confirmPass:'',
+                contact:'',
+                zipcode:'',
+                address:'',
+                city:'',
+                state:'',
+                shopname:'',
+                country:'',
+            })
+        }
+    }
+    
+    const classes = useStyles()
 
     return (
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="sm">
             <CssBaseline />
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
@@ -59,32 +103,23 @@ const Register = () => {
                 <Typography component="h1" variant="h5">
                     Sign up
                 </Typography>
-                <form className={classes.form} noValidate>
+                <form className={classes.form} noValidate onSubmit={(e)=>onSubmit(e)} autoComplete='off'>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item sm={6} xs={12}>
                             <TextField
-                                autoComplete="fname"
-                                name="firstName"
+                                autoComplete="full-name"
+                                name="name"
                                 variant="outlined"
                                 required
                                 fullWidth
-                                id="firstName"
-                                label="First Name"
+                                id="name"
+                                label="Full Name"
+                                onChange={e=>onChange(e)}
+                                value = {name}
                                 autoFocus
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="lastName"
-                                label="Last Name"
-                                name="lastName"
-                                autoComplete="lname"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
+                        <Grid item sm={6} xs={12}>
                             <TextField
                                 variant="outlined"
                                 required
@@ -92,10 +127,12 @@ const Register = () => {
                                 id="email"
                                 label="Email Address"
                                 name="email"
-                                autoComplete="email"
+                                type="email"
+                                onChange={e=>onChange(e)}
+                                value = {email}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item sm={6} xs={12}>
                             <TextField
                                 variant="outlined"
                                 required
@@ -105,12 +142,114 @@ const Register = () => {
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
+                                onChange={e=>onChange(e)}
+                                value = {password}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                label="I want to receive inspiration, marketing promotions and updates via email."
+                        <Grid item sm={6} xs={12}>
+                            <TextField
+                                error = {password !== confirmPass}
+                                helperText = {password !== confirmPass ? 'Passwords do not Match':''}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="confirmPass"
+                                label="Confirm Password"
+                                type="password"
+                                id="confirmPass"
+                                autoComplete="current-password"
+                                onChange={e=>onChange(e)}
+                                value = {confirmPass}
+                            />
+                        </Grid>
+                        <Grid item sm={6} xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="contact"
+                                label="Contact"
+                                type="text"
+                                id="contact"
+                                autoComplete="contact"
+                                onChange={e=>onChange(e)}
+                                value = {contact}
+                            />
+                        </Grid>
+                        <Grid item sm={6} xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="shopname"
+                                label="Shop Name"
+                                type="text"
+                                id="shopName"
+                                autoComplete="shop-name"
+                                onChange={e=>onChange(e)}
+                                value = {shopname}
+                            />
+                        </Grid>
+                        <Grid item sm={8} xs={12}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                name="address"
+                                label="Address"
+                                type="text"
+                                id="address"
+                                autoComplete="address"
+                                onChange={e=>onChange(e)}
+                                value = {address}
+                            />
+                        </Grid>
+                        <Grid item sm={4} xs={6}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                name="zipcode"
+                                label="Zip Code"
+                                type="text"
+                                id="zipcode"
+                                autoComplete="zipcode"
+                                onChange={e=>onChange(e)}
+                                value = {zipcode}
+                            />
+                        </Grid>
+                        <Grid item sm={4} xs={6}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                id="city"
+                                label="City"
+                                name="city"
+                                autoComplete="city"
+                                onChange={e=>onChange(e)}
+                                value = {city}
+                            />
+                        </Grid>
+                        <Grid item sm={4} xs={6}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                id="state"
+                                label="State"
+                                name="state"
+                                autoComplete="state"
+                                onChange={e=>onChange(e)}
+                                value = {state}
+                            />
+                        </Grid>
+                        <Grid item sm={4} xs={6}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                id="country"
+                                label="Country"
+                                name="country"
+                                autoComplete="country"
+                                onChange={e=>onChange(e)}
+                                value = {country}
                             />
                         </Grid>
                     </Grid>
@@ -125,7 +264,7 @@ const Register = () => {
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link to="/login" variant="body2">
                                 Already have an account? Sign in
                             </Link>
                         </Grid>
@@ -138,5 +277,7 @@ const Register = () => {
         </Container>
     )
 }
-
-export default Register
+Register.propType = {
+    registerUser: PropTypes.func.isRequired,
+}
+export default connect(null,{registerUser})(Register)

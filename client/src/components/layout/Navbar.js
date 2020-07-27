@@ -34,11 +34,11 @@ export default function Navbar() {
             RS Mobile
           </Typography>
           <Link to="/login"><Button
-            color="inherit"
+            type="inherit"
             variant="contained"
             color="primary">Login</Button></Link>
           <Link to="/register"><Button
-            color="inherit"
+            type="inherit"
             variant="contained"
             color="primary">Sign Up</Button></Link>
         </Toolbar>

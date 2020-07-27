@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.1",
@@ -21,7 +22,8 @@
     "mongoose": "^5.9.24",
     "mongoose-auto-increment": "^5.0.1",
     "nodemailer": "^6.4.10",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",

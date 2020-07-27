@@ -79,7 +79,7 @@ router.post('/',
                 },
                 (err,token)=>{
                     if(err) throw err
-                    res.json({token})
+                    res.status(200).json({msg:'Register Successfull!, Please check your email for confirmation.'})
                 }
             )
         } catch (err) {
