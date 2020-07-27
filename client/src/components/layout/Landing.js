@@ -31,6 +31,11 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    links:{
+        textDecoration:'none',
+        color:'white',
+        marginRight:theme.spacing(2),
+      },
 }));
 
 const Landing = () => {
@@ -38,7 +43,7 @@ const Landing = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <Link to="/register">
+            <Link to="/register" className={classes.links}>
                 <Button
                     fullWidth
                     variant="contained"
@@ -48,7 +53,7 @@ const Landing = () => {
                     Sign Up
             </Button>
             </Link>
-            <Link to="/login">
+            <Link to="/login" className={classes.links}>
                 <Button
                     fullWidth
                     variant="contained"

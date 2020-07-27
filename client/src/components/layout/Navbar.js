@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Link } from 'react-router-dom';
+import { Grid } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,7 +19,12 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
-}));
+  links:{
+    textDecoration:'none',
+    color:'white',
+    marginRight:theme.spacing(2),
+  },
+}))
 
 export default function Navbar() {
   const classes = useStyles();
@@ -31,16 +37,14 @@ export default function Navbar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            RS Mobile
+            <Link to='/' className={classes.links} >RS Mobile</Link>
           </Typography>
-          <Link to="/login"><Button
-            type="inherit"
-            variant="contained"
-            color="primary">Login</Button></Link>
-          <Link to="/register"><Button
-            type="inherit"
-            variant="contained"
-            color="primary">Sign Up</Button></Link>
+          <Link to="/login" className={classes.links}>
+            <Button color="inherit" >Login</Button>
+          </Link>
+          <Link to="/register" className={classes.links}>
+            <Button color="inherit" >Sign Up</Button>
+          </Link>
         </Toolbar>
       </AppBar>
     </div>
