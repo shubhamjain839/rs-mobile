@@ -83,7 +83,7 @@ const Register = ({registerUser}) => {
                 contact:'',
                 zipcode:'',
                 address:'',
-                city:'',
+                city:'',x
                 state:'',
                 shopname:'',
                 country:'',
